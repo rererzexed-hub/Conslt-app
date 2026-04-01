@@ -292,14 +292,22 @@
   const closeBtn = document.getElementById('closeBtn');
 
   // ✅ Кнопка "Вернуться в чат" — отправляет данные и закрывает
-  closeBtn.addEventListener('click', function() {
+closeBtn.addEventListener('click', function() {
+  try {
     if (window._formData) {
-      tg.sendData(window._formData); // отправляет боту и закрывает Mini App
+      tg.sendData(window._formData);
     } else {
       tg.close();
     }
-  });
+  } catch (e) {
+    alert('Ошибка: ' + e.message);
+  }
+});
 
+  
+  
+  
+  
   function validate() {
     let ok = true;
 
