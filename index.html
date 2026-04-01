@@ -345,9 +345,13 @@ form.addEventListener('submit', (e) => {
 // ← этого блока не было совсем!
 closeBtn.addEventListener('click', function() {
   if (window._formData) {
-    tg.sendData(window._formData);
+    try {
+      tg.sendData(window._formData);
+    } catch(e) {
+      alert('Ошибка sendData: ' + e.message);
+    }
   } else {
-    tg.close();
+    alert('_formData пустой!');
   }
 });
 </script>
