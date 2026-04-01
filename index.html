@@ -30,7 +30,6 @@
       overflow-x: hidden;
     }
 
-    /* Hero */
     .hero {
       position: relative;
       padding: 48px 24px 36px;
@@ -74,7 +73,6 @@
       margin: 0 auto 24px;
     }
 
-    /* Event info pills */
     .event-info {
       display: flex;
       justify-content: center;
@@ -95,7 +93,6 @@
     }
     .pill svg { width: 13px; height: 13px; }
 
-    /* Divider */
     .divider {
       width: 100%;
       height: 1px;
@@ -103,15 +100,12 @@
       margin: 8px 0 28px;
     }
 
-    /* Form */
     .form-wrap {
       padding: 0 20px;
       max-width: 480px;
       margin: 0 auto;
     }
-    .field {
-      margin-bottom: 18px;
-    }
+    .field { margin-bottom: 18px; }
     label {
       display: block;
       font-size: 11px;
@@ -149,7 +143,6 @@
     }
     .error-msg.show { display: block; }
 
-    /* Submit button */
     .btn {
       width: 100%;
       padding: 16px;
@@ -190,10 +183,34 @@
       font-family: 'Playfair Display', serif;
       font-size: 26px;
       margin-bottom: 12px;
+      color: var(--text);
     }
-    .success-screen p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+    .success-screen p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }
 
-    /* Loading spinner */
+    /* Кнопка "Вернуться в чат" */
+    .close-btn {
+      display: block;
+      width: 100%;
+      max-width: 280px;
+      margin: 0 auto;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: #0d0d0f;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .close-btn:active { transform: scale(0.98); }
+
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner {
       display: none;
@@ -231,30 +248,25 @@
 
   <div class="form-wrap">
     <form id="regForm" novalidate>
-
       <div class="field">
         <label>Имя и фамилия</label>
         <input type="text" id="fullname" placeholder="Иван Иванов" autocomplete="name"/>
         <div class="error-msg" id="fullname-err">Введите имя и фамилию</div>
       </div>
-
       <div class="field">
         <label>Email</label>
         <input type="email" id="email" placeholder="ivan@example.com" autocomplete="email"/>
         <div class="error-msg" id="email-err">Введите корректный email</div>
       </div>
-
       <div class="field">
         <label>Телефон</label>
         <input type="tel" id="phone" placeholder="+7 900 000 00 00" autocomplete="tel"/>
         <div class="error-msg" id="phone-err">Введите номер телефона</div>
       </div>
-
       <button type="submit" class="btn" id="submitBtn">
         <span class="btn-text">Зарегистрироваться →</span>
         <div class="spinner"></div>
       </button>
-
     </form>
   </div>
 </div>
@@ -265,6 +277,8 @@
   </div>
   <h2>Вы зарегистрированы!</h2>
   <p>Подтверждение придёт<br/>в этот чат в течение минуты.</p>
+  <!-- ✅ Отдельный класс — кнопка всегда видна -->
+  <button class="close-btn" id="closeBtn">Вернуться в чат →</button>
 </div>
 
 <script>
@@ -275,6 +289,16 @@
 
   const form = document.getElementById('regForm');
   const btn = document.getElementById('submitBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  // ✅ Кнопка "Вернуться в чат" — отправляет данные и закрывает
+  closeBtn.addEventListener('click', function() {
+    if (window._formData) {
+      tg.sendData(window._formData); // отправляет боту и закрывает Mini App
+    } else {
+      tg.close();
+    }
+  });
 
   function validate() {
     let ok = true;
@@ -307,23 +331,21 @@
     return ok;
   }
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     btn.classList.add('loading');
     btn.disabled = true;
 
-    const data = {
+    // ✅ Сохраняем данные — отправим когда нажмут "Вернуться в чат"
+    window._formData = JSON.stringify({
       fullname: document.getElementById('fullname').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
-    };
+    });
 
-    // Отправляем данные боту через Telegram WebApp
-    tg.sendData(JSON.stringify(data));
-
-    // Показываем успех
+    // Показываем экран успеха
     setTimeout(() => {
       document.getElementById('main').style.display = 'none';
       document.getElementById('successScreen').classList.add('show');
