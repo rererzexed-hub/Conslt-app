@@ -342,18 +342,10 @@ form.addEventListener('submit', (e) => {
   }, 600);
 });
 
-// ← этого блока не было совсем!
 closeBtn.addEventListener('click', function() {
-  if (window._formData) {
-    try {
-      tg.sendData(window._formData);
-    } catch(e) {
-      alert('Ошибка sendData: ' + e.message);
-    }
-  } else {
-    alert('_formData пустой!');
-  }
+  alert('клик!');
 });
+
 </script>
 </body>
 </html>
