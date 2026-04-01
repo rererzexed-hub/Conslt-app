@@ -282,83 +282,69 @@
 </div>
 
 <script>
-  const tg = window.Telegram.WebApp;
-  tg.expand();
-  tg.setHeaderColor('#0d0d0f');
-  tg.setBackgroundColor('#0d0d0f');
+ const tg = window.Telegram.WebApp;
+tg.expand();
+tg.setHeaderColor('#0d0d0f');
+tg.setBackgroundColor('#0d0d0f');
 
-  const form = document.getElementById('regForm');
-  const btn = document.getElementById('submitBtn');
-  const closeBtn = document.getElementById('closeBtn');
+const form = document.getElementById('regForm');
+const btn = document.getElementById('submitBtn');
 
-  // ✅ Кнопка "Вернуться в чат" — отправляет данные и закрывает
-closeBtn.addEventListener('click', function() {
-  try {
-    if (window._formData) {
-      tg.sendData(window._formData);
-    } else {
-      tg.close();
-    }
-  } catch (e) {
-    alert('Ошибка: ' + e.message);
-  }
-});
+function validate() {
+  let ok = true;
 
-  
-  
-  
-  
-  function validate() {
-    let ok = true;
-
-    const name = document.getElementById('fullname');
-    const nameErr = document.getElementById('fullname-err');
-    if (!name.value.trim() || name.value.trim().split(' ').length < 2) {
-      name.classList.add('error'); nameErr.classList.add('show'); ok = false;
-    } else {
-      name.classList.remove('error'); nameErr.classList.remove('show');
-    }
-
-    const email = document.getElementById('email');
-    const emailErr = document.getElementById('email-err');
-    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRe.test(email.value.trim())) {
-      email.classList.add('error'); emailErr.classList.add('show'); ok = false;
-    } else {
-      email.classList.remove('error'); emailErr.classList.remove('show');
-    }
-
-    const phone = document.getElementById('phone');
-    const phoneErr = document.getElementById('phone-err');
-    if (phone.value.trim().length < 7) {
-      phone.classList.add('error'); phoneErr.classList.add('show'); ok = false;
-    } else {
-      phone.classList.remove('error'); phoneErr.classList.remove('show');
-    }
-
-    return ok;
+  const name = document.getElementById('fullname');
+  const nameErr = document.getElementById('fullname-err');
+  if (!name.value.trim() || name.value.trim().split(' ').length < 2) {
+    name.classList.add('error'); nameErr.classList.add('show'); ok = false;
+  } else {
+    name.classList.remove('error'); nameErr.classList.remove('show');
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  const email = document.getElementById('email');
+  const emailErr = document.getElementById('email-err');
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRe.test(email.value.trim())) {
+    email.classList.add('error'); emailErr.classList.add('show'); ok = false;
+  } else {
+    email.classList.remove('error'); emailErr.classList.remove('show');
+  }
 
-    btn.classList.add('loading');
-    btn.disabled = true;
+  const phone = document.getElementById('phone');
+  const phoneErr = document.getElementById('phone-err');
+  if (phone.value.trim().length < 7) {
+    phone.classList.add('error'); phoneErr.classList.add('show'); ok = false;
+  } else {
+    phone.classList.remove('error'); phoneErr.classList.remove('show');
+  }
 
-    // ✅ Сохраняем данные — отправим когда нажмут "Вернуться в чат"
-    window._formData = JSON.stringify({
-      fullname: document.getElementById('fullname').value.trim(),
-      email: document.getElementById('email').value.trim(),
-      phone: document.getElementById('phone').value.trim(),
-    });
+  return ok;
+}
 
-    // Показываем экран успеха
-    setTimeout(() => {
-      document.getElementById('main').style.display = 'none';
-      document.getElementById('successScreen').classList.add('show');
-    }, 600);
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!validate()) return;
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  const payload = JSON.stringify({
+    fullname: document.getElementById('fullname').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
   });
+
+  // Показываем успех, потом отправляем
+  setTimeout(() => {
+    document.getElementById('main').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+
+    // Отправляем через 1.5 сек чтобы пользователь увидел экран
+    setTimeout(() => {
+      tg.sendData(payload);
+    }, 1500);
+  }, 600);
+});
 </script>
 </body>
 </html>
