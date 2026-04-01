@@ -343,8 +343,17 @@ form.addEventListener('submit', (e) => {
 });
 
 closeBtn.addEventListener('click', function() {
-  alert('клик!');
+  if (window._formData) {
+    try {
+      tg.sendData(window._formData);
+    } catch(e) {
+      alert('Ошибка sendData: ' + e.message);
+    }
+  } else {
+    alert('_formData пустой!');
+  }
 });
+
 
 </script>
 </body>
