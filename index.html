@@ -354,6 +354,17 @@ closeBtn.addEventListener('click', function() {
   }
 });
 
+closeBtn.addEventListener('click', function() {
+  if (window._formData) {
+    try {
+      tg.sendData(window._formData);
+    } catch(e) {
+      tg.close();
+    }
+  } else {
+    tg.close();
+  }
+});
 
 </script>
 </body>
