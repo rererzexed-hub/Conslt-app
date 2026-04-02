@@ -18,9 +18,7 @@
       --error: #e05c5c;
       --success: #5cb88a;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background: var(--bg);
       color: var(--text);
@@ -29,7 +27,6 @@
       padding: 0 0 40px;
       overflow-x: hidden;
     }
-
     .hero {
       position: relative;
       padding: 48px 24px 36px;
@@ -72,7 +69,6 @@
       max-width: 300px;
       margin: 0 auto 24px;
     }
-
     .event-info {
       display: flex;
       justify-content: center;
@@ -92,14 +88,12 @@
       color: var(--accent2);
     }
     .pill svg { width: 13px; height: 13px; }
-
     .divider {
       width: 100%;
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--border), transparent);
       margin: 8px 0 28px;
     }
-
     .form-wrap {
       padding: 0 20px;
       max-width: 480px;
@@ -134,7 +128,6 @@
       box-shadow: 0 0 0 3px rgba(201,169,110,0.12);
     }
     input.error { border-color: var(--error); }
-
     .error-msg {
       font-size: 12px;
       color: var(--error);
@@ -142,7 +135,6 @@
       display: none;
     }
     .error-msg.show { display: block; }
-
     .btn {
       width: 100%;
       padding: 16px;
@@ -159,7 +151,6 @@
     }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
     .success-screen {
       display: none;
       text-align: center;
@@ -194,12 +185,12 @@
 <div id="main">
   <div class="hero">
     <div class="badge">Регистрация открыта</div>
-    <h1>Конференция<br/><span>2025</span></h1>
+    <h1>Конференция<br/><span>2026</span></h1>
     <p>Заполни форму ниже и получи подтверждение сразу в Telegram</p>
     <div class="event-info">
       <div class="pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        15 марта 2025
+        15 апреля 2026
       </div>
       <div class="pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -255,16 +246,11 @@
 
   document.getElementById('closeBtn').addEventListener('click', function() {
     if (savedData) {
-      try {
-        tg.sendData(savedData); // отправляет данные боту и закрывает
-      } catch (e) {
-        tg.close(); // если не сработало — просто закрыть
-      }
-    } else {
-      tg.close();
+      tg.sendData(savedData);
     }
-    // принудительно закрываем через 300мс на случай если sendData не закрыл
-    setTimeout(function() { tg.close(); }, 300);
+    setTimeout(function() {
+      tg.close();
+    }, 300);
   });
 
   function validate() {
