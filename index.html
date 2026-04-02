@@ -185,12 +185,12 @@
 <div id="main">
   <div class="hero">
     <div class="badge">Регистрация открыта</div>
-    <h1>Конференция<br/><span>2026</span></h1>
+    <h1>Конференция<br/><span>2025</span></h1>
     <p>Заполни форму ниже и получи подтверждение сразу в Telegram</p>
     <div class="event-info">
       <div class="pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        15 апреля 2026
+        15 марта 2025
       </div>
       <div class="pill">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -238,20 +238,12 @@
 
 <script>
   const tg = window.Telegram.WebApp;
+  
+  // Обязательные настройки для мобильных устройств
   tg.expand();
+  tg.ready();      // Сообщает, что приложение загрузилось (важно для мобильных)
   tg.setHeaderColor('#0d0d0f');
   tg.setBackgroundColor('#0d0d0f');
-
-  let savedData = null;
-
-  document.getElementById('closeBtn').addEventListener('click', function() {
-    if (savedData) {
-      tg.sendData(savedData);
-    }
-    setTimeout(function() {
-      tg.close();
-    }, 300);
-  });
 
   function validate() {
     let ok = true;
@@ -292,16 +284,25 @@
     btn.disabled = true;
     btn.textContent = 'Отправка...';
 
-    savedData = JSON.stringify({
+    // Формируем данные
+    const userData = {
       fullname: document.getElementById('fullname').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
-    });
+    };
+    const dataToSend = JSON.stringify(userData);
 
-    setTimeout(function() {
-      document.getElementById('main').style.display = 'none';
-      document.getElementById('successScreen').classList.add('show');
-    }, 500);
+    // 🟢 ОТПРАВЛЯЕМ ДАННЫЕ БОТУ СРАЗУ (ключевое изменение)
+    tg.sendData(dataToSend);
+
+    // Показываем экран успеха
+    document.getElementById('main').style.display = 'none';
+    document.getElementById('successScreen').classList.add('show');
+  });
+
+  // Кнопка закрытия теперь просто закрывает WebApp (данные уже ушли)
+  document.getElementById('closeBtn').addEventListener('click', function() {
+    tg.close();
   });
 </script>
 </body>
