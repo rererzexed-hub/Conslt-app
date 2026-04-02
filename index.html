@@ -155,15 +155,11 @@
       color: #0d0d0f;
       cursor: pointer;
       margin-top: 8px;
-      position: relative;
-      overflow: hidden;
       transition: opacity 0.2s, transform 0.1s;
     }
     .btn:active { transform: scale(0.98); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .btn .btn-text { position: relative; z-index: 1; }
 
-    /* Success screen */
     .success-screen {
       display: none;
       text-align: center;
@@ -191,38 +187,6 @@
       line-height: 1.6;
       margin-bottom: 32px;
     }
-
-    /* Кнопка "Вернуться в чат" */
-    .close-btn {
-      display: block;
-      width: 100%;
-      max-width: 280px;
-      margin: 0 auto;
-      padding: 16px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      border: none;
-      border-radius: 12px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 15px;
-      font-weight: 500;
-      color: #0d0d0f;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-    }
-    .close-btn:active { transform: scale(0.98); }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner {
-      display: none;
-      width: 18px; height: 18px;
-      border: 2px solid rgba(0,0,0,0.2);
-      border-top-color: #0d0d0f;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto;
-    }
-    .btn.loading .btn-text { display: none; }
-    .btn.loading .spinner { display: block; }
   </style>
 </head>
 <body>
@@ -264,8 +228,7 @@
         <div class="error-msg" id="phone-err">Введите номер телефона</div>
       </div>
       <button type="submit" class="btn" id="submitBtn">
-        <span class="btn-text">Зарегистрироваться →</span>
-        <div class="spinner"></div>
+        Зарегистрироваться →
       </button>
     </form>
   </div>
@@ -277,95 +240,77 @@
   </div>
   <h2>Вы зарегистрированы!</h2>
   <p>Подтверждение придёт<br/>в этот чат в течение минуты.</p>
-  <!-- ✅ Отдельный класс — кнопка всегда видна -->
-  <button class="close-btn" id="closeBtn">Вернуться в чат →</button>
+  <button class="btn" id="closeBtn" style="max-width:280px; margin: 0 auto; display: block;">
+    Вернуться в чат →
+  </button>
 </div>
 
 <script>
-const tg = window.Telegram.WebApp;
-tg.expand();
-tg.setHeaderColor('#0d0d0f');
-tg.setBackgroundColor('#0d0d0f');
+  const tg = window.Telegram.WebApp;
+  tg.expand();
+  tg.setHeaderColor('#0d0d0f');
+  tg.setBackgroundColor('#0d0d0f');
 
-const form = document.getElementById('regForm');
-const btn = document.getElementById('submitBtn');
-const closeBtn = document.getElementById('closeBtn'); // ← забыл эту строку
+  let savedData = null;
 
-function validate() {
-  let ok = true;
-
-  const name = document.getElementById('fullname');
-  const nameErr = document.getElementById('fullname-err');
-  if (!name.value.trim() || name.value.trim().split(' ').length < 2) {
-    name.classList.add('error'); nameErr.classList.add('show'); ok = false;
-  } else {
-    name.classList.remove('error'); nameErr.classList.remove('show');
-  }
-
-  const email = document.getElementById('email');
-  const emailErr = document.getElementById('email-err');
-  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRe.test(email.value.trim())) {
-    email.classList.add('error'); emailErr.classList.add('show'); ok = false;
-  } else {
-    email.classList.remove('error'); emailErr.classList.remove('show');
-  }
-
-  const phone = document.getElementById('phone');
-  const phoneErr = document.getElementById('phone-err');
-  if (phone.value.trim().length < 7) {
-    phone.classList.add('error'); phoneErr.classList.add('show'); ok = false;
-  } else {
-    phone.classList.remove('error'); phoneErr.classList.remove('show');
-  }
-
-  return ok;
-}
-
-form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (!validate()) return;
-
-  btn.classList.add('loading');
-  btn.disabled = true;
-
-  // Сохраняем данные
-  window._formData = JSON.stringify({
-    fullname: document.getElementById('fullname').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-  });
-
-  setTimeout(() => {
-    document.getElementById('main').style.display = 'none';
-    document.getElementById('successScreen').classList.add('show');
-  }, 600);
-});
-
-closeBtn.addEventListener('click', function() {
-  if (window._formData) {
-    try {
-      tg.sendData(window._formData);
-    } catch(e) {
-      alert('Ошибка sendData: ' + e.message);
-    }
-  } else {
-    alert('_formData пустой!');
-  }
-});
-
-closeBtn.addEventListener('click', function() {
-  if (window._formData) {
-    try {
-      tg.sendData(window._formData);
-    } catch(e) {
+  document.getElementById('closeBtn').addEventListener('click', function() {
+    if (savedData) {
+      tg.sendData(savedData);
+    } else {
       tg.close();
     }
-  } else {
-    tg.close();
-  }
-});
+  });
 
+  function validate() {
+    let ok = true;
+
+    const name = document.getElementById('fullname');
+    const nameErr = document.getElementById('fullname-err');
+    if (!name.value.trim() || name.value.trim().split(' ').length < 2) {
+      name.classList.add('error'); nameErr.classList.add('show'); ok = false;
+    } else {
+      name.classList.remove('error'); nameErr.classList.remove('show');
+    }
+
+    const email = document.getElementById('email');
+    const emailErr = document.getElementById('email-err');
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRe.test(email.value.trim())) {
+      email.classList.add('error'); emailErr.classList.add('show'); ok = false;
+    } else {
+      email.classList.remove('error'); emailErr.classList.remove('show');
+    }
+
+    const phone = document.getElementById('phone');
+    const phoneErr = document.getElementById('phone-err');
+    if (phone.value.trim().length < 7) {
+      phone.classList.add('error'); phoneErr.classList.add('show'); ok = false;
+    } else {
+      phone.classList.remove('error'); phoneErr.classList.remove('show');
+    }
+
+    return ok;
+  }
+
+  document.getElementById('regForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Отправка...';
+
+    savedData = JSON.stringify({
+      fullname: document.getElementById('fullname').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+    });
+
+    setTimeout(function() {
+      document.getElementById('main').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+    }, 500);
+  });
 </script>
 </body>
 </html>
