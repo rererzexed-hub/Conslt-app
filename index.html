@@ -238,12 +238,12 @@
 
 <script>
   const tg = window.Telegram.WebApp;
-  
-  // Обязательные настройки для мобильных устройств
   tg.expand();
-  tg.ready();      // Сообщает, что приложение загрузилось (важно для мобильных)
+  tg.ready();
   tg.setHeaderColor('#0d0d0f');
   tg.setBackgroundColor('#0d0d0f');
+
+  let savedData = null;
 
   function validate() {
     let ok = true;
@@ -284,24 +284,24 @@
     btn.disabled = true;
     btn.textContent = 'Отправка...';
 
-    // Формируем данные
-    const userData = {
+    // Сохраняем данные, но НЕ отправляем ещё
+    savedData = JSON.stringify({
       fullname: document.getElementById('fullname').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
-    };
-    const dataToSend = JSON.stringify(userData);
+    });
 
-    // 🟢 ОТПРАВЛЯЕМ ДАННЫЕ БОТУ СРАЗУ (ключевое изменение)
-    tg.sendData(dataToSend);
-
-    // Показываем экран успеха
-    document.getElementById('main').style.display = 'none';
-    document.getElementById('successScreen').classList.add('show');
+    setTimeout(function() {
+      document.getElementById('main').style.display = 'none';
+      document.getElementById('successScreen').classList.add('show');
+    }, 500);
   });
 
-  // Кнопка закрытия теперь просто закрывает WebApp (данные уже ушли)
+  // Отправляем данные и закрываем только когда нажали кнопку
   document.getElementById('closeBtn').addEventListener('click', function() {
+    if (savedData) {
+      tg.sendData(savedData);
+    }
     tg.close();
   });
 </script>
