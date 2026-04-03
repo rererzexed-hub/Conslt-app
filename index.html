@@ -247,7 +247,6 @@
 
   function validate() {
     let ok = true;
-
     const name = document.getElementById('fullname');
     const nameErr = document.getElementById('fullname-err');
     if (!name.value.trim() || name.value.trim().split(' ').length < 2) {
@@ -255,7 +254,6 @@
     } else {
       name.classList.remove('error'); nameErr.classList.remove('show');
     }
-
     const email = document.getElementById('email');
     const emailErr = document.getElementById('email-err');
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -264,7 +262,6 @@
     } else {
       email.classList.remove('error'); emailErr.classList.remove('show');
     }
-
     const phone = document.getElementById('phone');
     const phoneErr = document.getElementById('phone-err');
     if (phone.value.trim().length < 7) {
@@ -272,7 +269,6 @@
     } else {
       phone.classList.remove('error'); phoneErr.classList.remove('show');
     }
-
     return ok;
   }
 
@@ -284,12 +280,12 @@
     btn.disabled = true;
     btn.textContent = 'Отправка...';
 
-    // Сохраняем данные, но НЕ отправляем ещё
-    savedData = JSON.stringify({
+    savedData = {
       fullname: document.getElementById('fullname').value.trim(),
       email: document.getElementById('email').value.trim(),
       phone: document.getElementById('phone').value.trim(),
-    });
+      user_id: tg.initDataUnsafe?.user?.id || 0
+    };
 
     setTimeout(function() {
       document.getElementById('main').style.display = 'none';
@@ -297,10 +293,15 @@
     }, 500);
   });
 
-  // Отправляем данные и закрываем только когда нажали кнопку
-  document.getElementById('closeBtn').addEventListener('click', function() {
+  document.getElementById('closeBtn').addEventListener('click', async function() {
     if (savedData) {
-      tg.sendData(savedData);
+      try {
+        await fetch('web-production-56e81.up.railway.app', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(savedData)
+        });
+      } catch(e) {}
     }
     tg.close();
   });
