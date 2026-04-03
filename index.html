@@ -294,19 +294,6 @@
       document.getElementById('successScreen').classList.add('show');
     }, 500);
   });
-
-  document.getElementById('closeBtn').addEventListener('click', async function() {
-    if (savedData) {
-      try {
-        await fetch('https://web-production-56e81.up.railway.app/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(savedData)
-        });
-      } catch(e) {}
-    }
-    tg.close();
-  });
 </script>
 </body>
 </html>
