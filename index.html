@@ -296,7 +296,7 @@
   document.getElementById('closeBtn').addEventListener('click', async function() {
     if (savedData) {
       try {
-        await fetch('web-production-56e81.up.railway.app', {
+        await fetch('web-production-56e81.up.railway.app/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(savedData)
